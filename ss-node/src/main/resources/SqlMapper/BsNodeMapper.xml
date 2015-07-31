@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.yrm.ss.node.persistence.BsNodeMapper">
+    <select id="findBsNodePage" resultMap="bsNodeMap">
+        SELECT 
+            bn.nodeId,
+            bn.nodeCode,
+            bn.nodeName,
+            bn.longitude,
+            bn.latitude,
+            bn.aEomsAccount,
+            bn.bEomsAccount,
+            bn.createAt,
+            bn.updateAt
+        FROM bs_node bn
+        WHERE 1 = 1
+        <if test="nodeCode != null and nodeCode != ''">  
+          AND bn.nodeCode like "%"#{nodeCode}"%"   
+        </if>
+        <if test="nodeName != null and nodeName != ''">  
+          AND bn.nodeName like "%"#{nodeName}"%"   
+        </if>
+    </select>
+    
+    <select id="findNearBsNodePage" resultMap="bsNodeMap">
+        SELECT 
+            bn.nodeId,
+            bn.nodeCode,
+            bn.nodeName,
+            bn.longitude,
+            bn.latitude,
+            bn.aEomsAccount,
+            bn.bEomsAccount,
+            bn.createAt,
+            bn.updateAt
+        FROM bs_node bn
+        WHERE CALC_DISTANCE(bn.longitude, bn.latitude, #{longitude}, #{latitude}) <![CDATA[ <= ]]> #{range}
+        ORDER BY updateAt DESC      
+    </select>
+    
+    <select id="getBsNodeById" parameterType="long" resultMap="bsNodeMap">
+        SELECT 
+            bn.nodeId,
+            bn.nodeCode,
+            bn.nodeName,
+            bn.longitude,
+            bn.latitude,
+            bn.aEomsAccount,
+            bn.bEomsAccount,
+            bn.createAt,
+            bn.updateAt
+        FROM bs_node bn
+        WHERE bn.nodeId = #{nodeId}
+    </select>
+    
+     <select id="getBsNodeByCode" parameterType="String" resultMap="bsNodeMap">
+        SELECT 
+            bn.nodeId,
+            bn.nodeCode,
+            bn.nodeName,
+            bn.longitude,
+            bn.latitude,
+            bn.aEomsAccount,
+            bn.bEomsAccount,
+            bn.createAt,
+            bn.updateAt
+        FROM bs_node bn
+        WHERE bn.nodeCode = #{nodeCode}
+    </select>
+    
+    <update id="updateBsNode" parameterType="BsNode">
+        UPDATE bs_node
+        SET nodeCode = #{nodeCode}, nodeName = #{nodeName},
+        	longitude = #{longitude}, latitude = #{latitude},
+        	aEomsAccount = #{aEomsAccount}, bEomsAccount = #{bEomsAccount},
+        	updateAt = NOW_LONG_TIME()
+        WHERE nodeId = #{nodeId}
+    </update>
+    
+    <insert id="insertBsNode" parameterType="BsNode" useGeneratedKeys="true" keyProperty="nodeId">
+        INSERT INTO bs_node (nodeCode,nodeName,longitude,latitude,aEomsAccount,bEomsAccount,createAt,updateAt)
+        VALUES (#{nodeCode},#{nodeName},#{longitude},#{latitude},#{aEomsAccount},#{bEomsAccount},NOW_LONG_TIME(),NOW_LONG_TIME())
+    </insert>
+    
+    <resultMap id="bsNodeMap" type="BsNode">
+        <id column="nodeId" property="nodeId" />
+    </resultMap>
+</mapper>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.yrm.ss.node.persistence.BsNodeLogMapper">
+    <select id="findBsNodeLogPage" resultMap="bsNodeLogMap">
+        SELECT 
+        	bnl.logId,
+            bnl.nodeId,
+            bnl.nodeCode,
+            bnl.nodeName,
+            bnl.columnName,
+            bnl.oldValue,
+            bnl.newValue,
+            bnl.editAt,
+            bnl.editUser
+        FROM bs_node_log bnl
+        WHERE 1 = 1
+        <if test="nodeCode != null and nodeCode != ''">  
+          AND bnl.nodeCode like "%"#{nodeCode}"%"   
+        </if>
+        <if test="nodeName != null and nodeName != ''">  
+          AND bnl.nodeName like "%"#{nodeName}"%"   
+        </if>
+        <if test="userName != null and userName != ''">  
+          AND bnl.userName = #{userName}   
+        </if>
+        ORDER BY editAt DESC
+    </select>
+    
+    <insert id="insertBsNodeLog" parameterType="bsNodeLog" useGeneratedKeys="true" keyProperty="logId">
+        INSERT INTO bs_node_log (nodeId,nodeCode,nodeName,columnName,oldValue,newValue,editAt,editUser)
+        VALUES (#{nodeId},#{nodeCode},#{nodeName},#{columnName},#{oldValue},#{newValue},NOW_LONG_TIME(),#{editUser})
+    </insert>
+    
+    <resultMap id="bsNodeLogMap" type="BsNodeLog">
+        <id column="logId" property="logId" />
+    </resultMap>
+</mapper>

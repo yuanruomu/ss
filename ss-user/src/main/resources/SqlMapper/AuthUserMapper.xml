@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.yrm.ss.user.persistence.AuthUserMapper">
+    <select id="getAuthUserInfo" parameterType="long" resultMap="authUserMap">
+        SELECT 
+            au.userId,
+            au.userName,
+			au.password,
+            au.phone,
+            au.state,
+            au.lastLogin,
+            au.loginErrNum,
+            au.loginErrTime,
+            au.isAdmin,
+            au.createAt,
+            au.updateAt
+        FROM auth_user au
+        WHERE au.userId = #{userId}
+    </select>
+    
+    <select id="getUserNameCount" parameterType="String" resultType="int">
+		SELECT COUNT(userName)
+		FROM auth_user where userName = #{userName}
+	</select>
+    
+    <insert id="insertAuthUser" parameterType="AuthUser" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO auth_user (userName,password,phone,createAt,updateAt)
+        VALUES (#{userName},#{password},#{phone},NOW_LONG_TIME(),NOW_LONG_TIME())
+    </insert>
+
+    <update id="updateUserState" parameterType="long">
+        UPDATE auth_user au
+        SET au.state = #{userState}, au.updateAt = NOW_LONG_TIME() 
+        WHERE au.userId = #{userId}
+    </update>
+    
+    <update id="updateUserPassword">
+		UPDATE auth_user SET passwd = #{password}, au.updateAt = NOW_LONG_TIME() 
+		WHERE user_id = #{userId}			
+	</update>
+	
+	<select id="getAuthUserByUserName" parameterType="String" resultType="AuthUser">
+        SELECT
+            au.userId,
+            au.userName,
+			au.password,
+            au.phone,
+            au.state,
+            au.lastLogin,
+            au.loginErrNum,
+            au.loginErrTime,
+            au.isAdmin,
+            au.createAt,
+            au.updateAt
+        FROM auth_user au
+        WHERE au.userName = #{userName}
+    </select>
+    
+    <resultMap id="authUserMap" type="AuthUser">
+        <id column="userId" property="userId" />
+    </resultMap>
+</mapper>
