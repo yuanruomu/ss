@@ -12,6 +12,7 @@
         <module>ss-api</module>
         <module>ss-common</module>
         <module>ss-node</module>
+        <module>ss-user</module>
     </modules>
 
     <repositories>
